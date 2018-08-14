@@ -1,0 +1,21 @@
+BEGIN;
+ DROP TABLE IF EXISTS users CASCADE;
+ DROP TABLE IF EXISTS post CASCADE;
+
+CREATE TABLE users (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(10) NOT NULL,
+ email VARCHAR(30) NOT NULL,
+ password VARCHAR(30) NOT NULL
+
+);
+CREATE TABLE post (
+ id SERIAL PRIMARY KEY,
+ title VARCHAR(10) NOT NULL,
+ description VARCHAR(40) NOT NULL,
+ user_id INTEGER REFERENCES users(id)
+
+);
+
+INSERT INTO users (name,email,password) VALUES ('Mohannad','a@gmail.com','111i');
+COMMIT;
