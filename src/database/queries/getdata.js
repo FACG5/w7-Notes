@@ -13,7 +13,7 @@ const getuserpost = cb =>
   });
 
   //getLastnotes
-  const sqllastpost = { text: "SELECT *  FROM post join users ON post.user_id = users.id ORDER BY post.create_at ASC LIMIT 10;" };
+  const sqllastpost = { text: "SELECT post.*, users.name  FROM post INNER JOIN users ON post.user_id = users.id ORDER BY post.create_at DESC LIMIT 10;"};
   const getlastpost = cb =>
   dbconnection.query(sqllastpost, (err, res) => {
     if (err) {

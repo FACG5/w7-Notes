@@ -129,26 +129,26 @@ const login = (request, response) => {
          if (err) {
           response.end(JSON.stringify({ err: err }));
           // console.log(res);
-          
+
         } else if (res.length === 0) {
           response.writeHead(500, { "content-type": "text/html" });
           response.end("<h1>User not found</h1>");
         } else {
           const userDetails = { userId: res[0].id, name: res[0].name };
           const cookie = sign(userDetails,  process.env.SECRET);
-          
-          
-          console.log(password);
+
+
+          // console.log(password);
           bcrypt.compare(password, res[0].password, (err, res) => {
           // console.log(password);
           if (err) {
             console.log('Error');
-            
+
           } else if (res === false) {
               // console.log('AAAAA')
               response.end(JSON.stringify({ err: "error password " }));
             } else {
-              console.log( JSON.stringify(res)+"mmmmmmm")
+              // console.log( JSON.stringify(res)+"mmmmmmm")
               response.writeHead(302, {
                 Location: "/home",
                 "Set-Cookie": `jwt=${cookie}; HttpOnly`
@@ -172,6 +172,20 @@ const logout = (request, response) => {
   });
   response.end();
 };
+
+const displayPosts=(request,response)=>{
+  response.writeHead(200, {'content-type':'text/html'
+  });
+  getlastpost((err,res)=>{
+    console.log('aaaa>>>>',res);
+    if (err) {
+      response.end(JSON.stringify({ err: err }));
+    } else {
+      response.end(JSON.stringify({ err: null, result: JSON.stringify(res) }));
+    }
+  });
+};
+
 
 const handelError = response => {
   response.writeHead(404, { "content-type": "text/html" });
@@ -205,5 +219,6 @@ module.exports = {
   logout,
   handelError,
   handleSignUp,
-  handelWebPage
+  handelWebPage,
+  displayPosts
 };
