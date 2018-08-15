@@ -18,14 +18,16 @@ for (let i = 0; i < arr.length; i++) {
   let name=arr[i].name;
 let postContainer = document.createElement("div");
   let head = document.createElement("h2");
-    head.textContent = title;
+    head.textContent = 'The title : ' + title;
     postContainer.appendChild(head);
   let post = document.createElement("p");
     post.textContent = description;
     postContainer.appendChild(post);
-  let poster = document.createElement("div");
-    poster.textContent =name;
+  let poster = document.createElement("p");
+    poster.textContent = 'Posted By : ' + name;
     postContainer.appendChild(poster);
     postsContainer.appendChild(postContainer);
+    let line = document.createElement('hr');
+    postContainer.appendChild(line);
   }
 }
