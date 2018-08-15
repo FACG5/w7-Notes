@@ -1,5 +1,5 @@
 # w7-Notes
-# w7-Notes
+
 ## What: 
 Our website is a public note sharing website. Through our website you can write a cheerful note to yourself, remind yourself of an upcoming event or even write your shopping list. And, as those notes can be viewed by other users they can remind you if you forget or your mom can add up to your shopping list!
 ## How:
