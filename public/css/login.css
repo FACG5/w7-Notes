@@ -1,0 +1,50 @@
+body {
+    background: #f1f1f1;
+    padding: 100px;
+}
+
+.container {
+    margin: auto;
+    width: 65%;
+    background: #FFF;
+    border: 1px solid #000;
+    min-height: 400px;
+    padding: 20px 40px;
+}
+
+h1 {
+  font-size: 36px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+}
+
+label {
+    font-weight: bold;
+    letter-spacing: 0.7px;
+}
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    background-color: #4caf50;
+    font-weight: bold;
+    color: #FFF;
+    cursor: pointer;
+}
+
+#emailErr {
+    color: red;
+}

@@ -6,29 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Blogs</title>
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="public/css/signup.css">
 </head>
 
 <body>
     <h1>Test</h1>
-    <form method="POST" action="signup" >
         <label for="name">name:
             <input id="name" name= "name" required/>
         </label>
+        <p id="nameErr" class="error"></p>
+
+
         <label for="email">Email:
             <input id="email" name="email"type="email" required/>
         </label>
-        <p id="emailErr"></p>
+        <p id="emailErr" class="error"></p>
+
+
         <label for="password">Password:
-            <input id="password" type="password" name="password" />
+            <input id="password" type="password" name="password" required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"/>
         </label>
         <p id="passwordErr" class="error"></p>
+
+
         <label for="confirmPassword">Confirm password:
             <input id="confirmPassword" type="password" required/>
         </label>
         <p id="confirmErr" class="error"></p>
+
+        
         <button id="adduser">Submit</button>
-    </form>
     </section>
     <script src="public/js/fetch.js"></script>
     <script src="public/js/signup.js"></script>
