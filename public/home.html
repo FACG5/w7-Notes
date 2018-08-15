@@ -7,8 +7,15 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>test</h1>
+    <h1 id="header"></h1>
+    <form action="/addpost" method="POST">
+        <input type="text" id="title" name="title" placeholder="Enter title">
+        <textarea type="text" id="description" name="description" placeholder="Enter description"></textarea>
+        <button id="add">Add</button>
+        <a href="/logout">Log out</a>
+    </form>
 
-    <a href="/logout">Log oyut</a>
+    <script src="public/js/fetch.js"></script>
+    <script src="public/js/dom.js"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@ CREATE TABLE post (
  id SERIAL PRIMARY KEY,
  title TEXT NOT NULL,
  description TEXT NOT NULL,
- create_at timestamp without time zone,
+ create_at timestamp without time zone DEFAULT NOW(),
  user_id INTEGER REFERENCES users(id)
 
 );
