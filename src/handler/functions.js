@@ -125,7 +125,6 @@ const login = (request, response) => {
       checkUser(email, password, (err, res) => {
          if (err) {
           response.end(JSON.stringify({ err: err }));
-          
         } else if (res.length === 0) {
           response.writeHead(500, { "content-type": "text/html" });
           response.end("<h1>User not found</h1>");
@@ -162,6 +161,20 @@ const logout = (request, response) => {
   });
   response.end();
 };
+
+const displayPosts=(request,response)=>{
+  response.writeHead(200, {'content-type':'text/html'
+  });
+  getlastpost((err,res)=>{
+    console.log('aaaa>>>>',res);
+    if (err) {
+      response.end(JSON.stringify({ err: err }));
+    } else {
+      response.end(JSON.stringify({ err: null, result: JSON.stringify(res) }));
+    }
+  });
+};
+
 
 const handelError = response => {
   response.writeHead(404, { "content-type": "text/html" });
@@ -249,5 +262,6 @@ module.exports = {
   handleSignUp,
   handelWebPage,
   addpost,
-  getName
+  getName,
+  displayPosts
 };
