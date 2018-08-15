@@ -1,58 +1,171 @@
+"use strict";
+
 const path = require("path");
 const read = require("./read.js");
-
-
+const { getuserpost, getlastpost } = require("../database/queries/getdata");
+const { addUser, addPost } = require("../database/queries/postdata");
+const { deletepost } = require("../database/queries/delete");
+const { checkUser } = require("../database/queries/checkuser");
+const bcrypt = require("bcryptjs");
+const { parse } = require("cookie");
+const { sign, verify } = require("jsonwebtoken");
+const querystring = require('querystring');
 
 const handelHomePage = (request, response) => {
   response.writeHead(200, { "content-type": "text/html" });
-  read(path.join(__dirname, "..", "..", "public", "index.html"), (err, res) => {
+  read(
+    path.join(__dirname, "..", "..", "public","login.html"),
+    (err, res) => {
+      if (err) {
+        response.writeHead(500, { "content-type": "text/html" });
+        response.end("<h1>Sorry, There is a problem</h1>");
+      } else {
+        response.end(res);
+      }
+    }
+  );
+};
+
+///hashpassword
+const hashPassword = (password, callback) => {
+  bcrypt.genSalt(10, (err, salt) => {
     if (err) {
-      response.writeHead(500, { "content-type": "text/html" });
-      response.end("<h1>Sorry, There is a problem</h1>");
+      callback(err);
     } else {
-      response.end(res);
+      bcrypt.hash(password, salt, callback);
     }
   });
 };
 
 const serverStaticFile = (request, response) => {
-    const endponit = request.url;
-    const extention = endponit.split(".")[1];
-    const contenttype = {
-      html: "text/html",
-      css: "text/css",
-      js: "application/javascript",
-      jpg: "image/jpg",
-      png: "image/png",
-      json: "application/json",
-      gif: "image/gif"
-    };
-    response.writeHead(200, {
-      "content-type": contenttype[extention]
-    });
-  
-    read(path.join(__dirname, "..", "..", endponit), (err, res) => {
-      if (err) {
-        response.writeHead(500, { "content-type": "text/html" });
-        response.end("<h1>Sorry, There is a problem</h1>");
-      } else response.end(res);
-    });
+  const endponit = request.url;
+  const extention = endponit.split(".")[1];
+  const contenttype = {
+    html: "text/html",
+    css: "text/css",
+    js: "application/javascript",
+    jpg: "image/jpg",
+    png: "image/png",
+    json: "application/json",
+    gif: "image/gif"
   };
+  response.writeHead(200, {
+    "content-type": contenttype[extention]
+  });
 
+  read(path.join(__dirname, "..", "..", endponit), (err, res) => {
+    if (err) {
+      response.writeHead(500, { "content-type": "text/html" });
+      response.end("<h1>Sorry, There is a problem</h1>");
+    } else response.end(res);
+  });
+};
+
+const insetUser = (request, response) => {
+  let data = "";
+  request.on("data", chunk => {
+    data += chunk;
+   console.log(data + 'SSSSS');
+   
+  });
+  request.on("end", () => {
+    // const user = JSON.parse(data);
+    
+    const user = querystring.parse(data);
+    
+    const { name, email, password } = user;
+    if (user.name && user.email && user.password) {
+      hashPassword(password, (err, hash) => {
+        if (err) {
+          response.end(JSON.stringify({ err: err }));
+        } else {
+          addUser(name, email, hash, (err, res) => {
+            if (err) {
+              response.end(JSON.stringify({ err: err }));
+            } else {
+              response.writeHead(302, {
+                'Location': "/"
+              });
+              console.log(res);
+             return response.end(
+                JSON.stringify({ err: null, result: JSON.stringify(res) })
+              );
+            }
+          });
+        }
+      });
+    } else {
+      response.end(JSON.stringify({ err: "Please Enter Data User! " }));
+    }
+  });
+};
+
+const login = (request, response) => {
+  let data = "";
+  request.on("data", chunk => {
+    data += chunk;
+  });
+  request.on("end", () => {
+    // const user = JSON.parse(data);
+    const user = querystring.parse(data);
+console.log(user)
+    const { email, password } = user;
+    if (user.email && user.password) {
+    
+      checkUser(email, password, (err, res) => {
+         if (err) {
+          response.end(JSON.stringify({ err: err }));
+        } else if (res.length === 0) {
+          response.end(JSON.stringify({ err: "the user not found " }));
+        } else {
+          const userDetails = { userId: res[0].id, name: res[0].name };
+          const cookie = sign(userDetails,  process.env.SECRET);
+          console.log(cookie);
+          console.log(res[0].name)
+          bcrypt.compare(password, res[0].password, (err, res) => {
+            if (err) {
+              console.log(err)
+              response.end(JSON.stringify({ err: "error password " }));
+            } else {
+              console.log( JSON.stringify(res)+"mmmmmmm")
+              response.writeHead(302, {
+                Location: "/",
+                "Set-Cookie": `jwt=${cookie}; HttpOnly`
+              });
+              response.end(
+                JSON.stringify({ err: null, result: JSON.stringify(res) })
+              );
+            }
+          });
+        }
+      });
+    } else {
+      response.end(JSON.stringify({ err: "Please Enter Data User! " }));
+    }
+  });
+};
+const logout = (request, response) => {
+  res.writeHead(302, {
+    Location: "/home",
+    "Set-Cookie": `jwt=0; Max-Age=0`
+  });
+  response.end();
+};
 
 const handelError = response => {
-    response.writeHead(404, { "content-type": "text/html" });
-    read(path.join(__dirname, "..", "..", "public", "errp.html"), (err, res) => {
-      if (err) {
-        response.end(err.message);
-      } else response.end(res);
-    });
-  };
+  response.writeHead(404, { "content-type": "text/html" });
+  read(path.join(__dirname, "..", "..", "public", "errp.html"), (err, res) => {
+    if (err) {
+      response.end(err.message);
+    } else response.end(res);
+  });
+};
 
-
-
-  module.exports = {
-    handelHomePage,
-    serverStaticFile,
-    handelError
-  };
+module.exports = {
+  handelHomePage,
+  serverStaticFile,
+  insetUser,
+  login,
+  logout,
+  handelError
+};

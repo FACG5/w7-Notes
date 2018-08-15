@@ -12,7 +12,7 @@ if (!process.env.DB_URL)
 
 // if (process.env.NODE_ENV === "test") {
 //   DB_URL = process.env.TEST_DB_URL;
-}
+// }
 
 const params = url.parse(process.env.DB_URL);
 const [username, password] = params.auth.split(':');
