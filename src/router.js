@@ -6,7 +6,8 @@ const {
   logout,
   handelError,
   handleSignUp,
-  handelWebPage
+  handelWebPage,
+  displayPosts
 } = require("./handler/functions.js");
 const path = require("path");
 
@@ -26,14 +27,18 @@ const router = (req, res) => {
     insetUser(req, res);
   } else if (endponit === "/signup" && req.method === 'GET') {
     handleSignUp(req, res);
-  } 
+  }
   else if (endponit === "/login") {
     login(req, res);
   } else if (endponit === "/logout") {
     logout(req, res);
   } else if (endponit === "/home") {
     handelWebPage(req, res)
-  } else {
+  }
+  else if (endponit==="/post" ) {
+    displayPosts(req,res);
+  }
+  else {
     handelError(res);
   }
 };

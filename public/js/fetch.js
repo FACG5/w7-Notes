@@ -3,7 +3,6 @@ const fetchdata = (method, url, data, cb) => {
   xhr.onreadystatechange = () => {
     console.log(xhr.readyState, xhr.status);
     if (xhr.readyState === 4) {
-      console.log(JSON.stringify(xhr.responseText));
       if (xhr.status === 200) {
         var result = JSON.parse(xhr.responseText);
         if (result.err) {
