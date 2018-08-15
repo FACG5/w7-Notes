@@ -119,36 +119,25 @@ const login = (request, response) => {
     data += chunk;
   });
   request.on("end", () => {
-    // const user = JSON.parse(data);
     const user = querystring.parse(data);
-// console.log(user)
     const { email, password } = user;
     if (user.email && user.password) {
-
       checkUser(email, password, (err, res) => {
          if (err) {
           response.end(JSON.stringify({ err: err }));
-          // console.log(res);
-
         } else if (res.length === 0) {
           response.writeHead(500, { "content-type": "text/html" });
           response.end("<h1>User not found</h1>");
         } else {
           const userDetails = { userId: res[0].id, name: res[0].name };
           const cookie = sign(userDetails,  process.env.SECRET);
-
-
-          // console.log(password);
           bcrypt.compare(password, res[0].password, (err, res) => {
-          // console.log(password);
           if (err) {
-            console.log('Error');
-
+            return new Error('Error');
+            
           } else if (res === false) {
-              // console.log('AAAAA')
               response.end(JSON.stringify({ err: "error password " }));
             } else {
-              // console.log( JSON.stringify(res)+"mmmmmmm")
               response.writeHead(302, {
                 Location: "/home",
                 "Set-Cookie": `jwt=${cookie}; HttpOnly`
@@ -211,6 +200,58 @@ const handelWebPage = (request, response) => {
   );
 }
 
+const addpost = (request, response) => {
+  let data = "";
+  request.on("data", chunk => {
+    data += chunk;
+  });
+  request.on("end", () => {
+    const finalData = querystring.parse(data);
+    const {jwt}=parse(request.headers.cookie);
+    verify(jwt,process.env.SECRET,(err,jwt)=>{
+      if(err){
+        return send401(response);
+      }else{
+    const user_id = jwt.userId
+    const {
+      title,
+      description} = finalData;
+    addPost(title, description, user_id, (err, res) => {
+      if (err) {
+        response.end(JSON.stringify({ err: err }));
+      } else {
+        response.writeHead(302, { 'location': '/home' });
+        return response.end();
+      }
+    })
+  }
+})
+  });
+}
+
+const getName = (request, response) => {
+  const {jwt}=parse(request.headers.cookie);
+  verify(jwt,process.env.SECRET,(err,jwt)=>{
+    if(err){
+      return send401(response);
+    }else{
+      response.end(JSON.stringify({err: null, result: jwt.name}));
+    }
+  })  
+}
+
+const send401 = (response) => {
+  const message = 'fail!';
+  response.writeHead(
+    401,
+    {
+      'Content-Type': 'text/plain',
+      'Content-Length': message.length
+    }
+  );
+  return response.end(message);
+}
+
 module.exports = {
   handelHomePage,
   serverStaticFile,
@@ -220,5 +261,7 @@ module.exports = {
   handelError,
   handleSignUp,
   handelWebPage,
+  addpost,
+  getName,
   displayPosts
 };

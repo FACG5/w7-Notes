@@ -16,11 +16,12 @@ const addUser = (name, email, password, cb) => {
 };
 
 // addpost
-const addPost = (title, description, create_at, user_id, cb) => {
+
+const addPost = (title, description, user_id, cb) => {
+ 
   let sql = {
-    text:
-      "INSERT INTO users (title, description, create_at,user_id) VALUES ($1, $2, $3) RETURNING id ;",
-    values: [title, description, create_at, user_id]
+    text: "INSERT INTO post (title, description, user_id) VALUES ($1, $2, $3) RETURNING id ;",
+    values: [title, description, user_id]
   };
   dbconnection.query(sql, (err, res) => {
     if (err) {
