@@ -14,7 +14,7 @@ const querystring = require('querystring');
 const handelHomePage = (request, response) => {
   response.writeHead(200, { "content-type": "text/html" });
   read(
-    path.join(__dirname, "..", "..", "public","login.html"),
+    path.join(__dirname, "..", "..", "public", "login.html"),
     (err, res) => {
       if (err) {
         response.writeHead(500, { "content-type": "text/html" });
@@ -25,6 +25,21 @@ const handelHomePage = (request, response) => {
     }
   );
 };
+
+const handleSignUp = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  read(
+    path.join(__dirname, '..', '..', 'public', 'signup.html'),
+    (err, res) => {
+      if (err) {
+        response.writeHead(500, { "content-type": "text/html" });
+        response.end("<h1>Sorry, There is a problem</h1>");
+      } else {
+        response.end(res);
+      }
+    }
+  );
+}
 
 ///hashpassword
 const hashPassword = (password, callback) => {
@@ -65,14 +80,13 @@ const insetUser = (request, response) => {
   let data = "";
   request.on("data", chunk => {
     data += chunk;
-   console.log(data + 'SSSSS');
-   
+
   });
   request.on("end", () => {
-    // const user = JSON.parse(data);
-    
-    const user = querystring.parse(data);
-    
+    const user = JSON.parse(data);
+
+    // const user = querystring.parse(data);
+
     const { name, email, password } = user;
     if (user.name && user.email && user.password) {
       hashPassword(password, (err, hash) => {
@@ -83,11 +97,10 @@ const insetUser = (request, response) => {
             if (err) {
               response.end(JSON.stringify({ err: err }));
             } else {
-              response.writeHead(302, {
-                'Location': "/"
-              });
-              console.log(res);
-             return response.end(
+              // response.writeHead(302, {
+              //   'Location': "/"
+              // });
+              return response.end(
                 JSON.stringify({ err: null, result: JSON.stringify(res) })
               );
             }
@@ -95,7 +108,7 @@ const insetUser = (request, response) => {
         }
       });
     } else {
-      response.end(JSON.stringify({ err: "Please Enter Data User! " }));
+      // response.end(JSON.stringify({ err: "Please Enter Data User! " }));
     }
   });
 };
@@ -108,28 +121,36 @@ const login = (request, response) => {
   request.on("end", () => {
     // const user = JSON.parse(data);
     const user = querystring.parse(data);
-console.log(user)
+// console.log(user)
     const { email, password } = user;
     if (user.email && user.password) {
-    
+
       checkUser(email, password, (err, res) => {
          if (err) {
           response.end(JSON.stringify({ err: err }));
+          // console.log(res);
+          
         } else if (res.length === 0) {
-          response.end(JSON.stringify({ err: "the user not found " }));
+          response.writeHead(500, { "content-type": "text/html" });
+          response.end("<h1>User not found</h1>");
         } else {
           const userDetails = { userId: res[0].id, name: res[0].name };
           const cookie = sign(userDetails,  process.env.SECRET);
-          console.log(cookie);
-          console.log(res[0].name)
+          
+          
+          console.log(password);
           bcrypt.compare(password, res[0].password, (err, res) => {
-            if (err) {
-              console.log(err)
+          // console.log(password);
+          if (err) {
+            console.log('Error');
+            
+          } else if (res === false) {
+              // console.log('AAAAA')
               response.end(JSON.stringify({ err: "error password " }));
             } else {
               console.log( JSON.stringify(res)+"mmmmmmm")
               response.writeHead(302, {
-                Location: "/",
+                Location: "/home",
                 "Set-Cookie": `jwt=${cookie}; HttpOnly`
               });
               response.end(
@@ -145,8 +166,8 @@ console.log(user)
   });
 };
 const logout = (request, response) => {
-  res.writeHead(302, {
-    Location: "/home",
+  response.writeHead(302, {
+    Location: "/",
     "Set-Cookie": `jwt=0; Max-Age=0`
   });
   response.end();
@@ -161,11 +182,28 @@ const handelError = response => {
   });
 };
 
+const handelWebPage = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  read(
+    path.join(__dirname, '..', '..', 'public', 'home.html'),
+    (err, res) => {
+      if (err) {
+        response.writeHead(500, { "content-type": "text/html" });
+        response.end("<h1>Sorry, There is a problem</h1>");
+      } else {
+        response.end(res);
+      }
+    }
+  );
+}
+
 module.exports = {
   handelHomePage,
   serverStaticFile,
   insetUser,
   login,
   logout,
-  handelError
+  handelError,
+  handleSignUp,
+  handelWebPage
 };

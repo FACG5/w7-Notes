@@ -4,7 +4,9 @@ const {
   insetUser,
   login,
   logout,
-  handelError
+  handelError,
+  handleSignUp,
+  handelWebPage
 } = require("./handler/functions.js");
 const path = require("path");
 
@@ -20,12 +22,17 @@ const router = (req, res) => {
     // }
   } else if (endponit.includes("public")) {
     serverStaticFile(req, res);
-  } else if (endponit === "/signup" && req.method ==='POST') {
+  } else if (endponit === "/signup" && req.method === 'POST') {
     insetUser(req, res);
-  } else if (endponit === "/login") {
+  } else if (endponit === "/signup" && req.method === 'GET') {
+    handleSignUp(req, res);
+  } 
+  else if (endponit === "/login") {
     login(req, res);
   } else if (endponit === "/logout") {
     logout(req, res);
+  } else if (endponit === "/home") {
+    handelWebPage(req, res)
   } else {
     handelError(res);
   }
