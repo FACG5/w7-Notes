@@ -21,9 +21,13 @@ const router = (req, res) => {
     if (req.headers.cookie) {
       const { jwt } = parse(req.headers.cookie);
       if (jwt) {
-        verify(jwt, process.env.SECRET, (err, jwt) => {
-          res.writeHead(302, { location: "/home" });
-          res.end();
+        verify(jwt, process.env.SECRET, (err, result) => {
+          if (result) {
+            res.writeHead(302, { location: "/home" });
+            res.end();
+          } else {
+            handelHomePage(req, res);
+          }
         });
       } else {
         handelHomePage(req, res);
@@ -47,9 +51,14 @@ const router = (req, res) => {
       console.log(jwt);
 
       if (jwt) {
-        verify(jwt, process.env.SECRET, (err, jwt) => {
+        verify(jwt, process.env.SECRET, (err, result) => {
+         if(result){
           handelWebPage(req, res);
-        });
+        }else{
+          handelHomePage(req, res);
+
+        }}
+      );
       } else {
         handelHomePage(req, res);
       }
