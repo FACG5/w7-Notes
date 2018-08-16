@@ -90,10 +90,7 @@ adduser.addEventListener("click", e => {
     password: password
   };
   fetchdata("POST", "/signup", user, (err, res) => {
-    console.log(res+"sssss")
-    console.log('err ', err);
-
-  if (err) {
+   if (err) {
       alert(err);
     } else {
       alert("sign up");
