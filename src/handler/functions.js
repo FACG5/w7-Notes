@@ -166,7 +166,6 @@ const displayPosts=(request,response)=>{
   response.writeHead(200, {'content-type':'text/html'
   });
   getlastpost((err,res)=>{
-    console.log('aaaa>>>>',res);
     if (err) {
       response.end(JSON.stringify({ err: err }));
     } else {
@@ -209,6 +208,7 @@ const addpost = (request, response) => {
     const finalData = querystring.parse(data);
     const {jwt}=parse(request.headers.cookie);
     verify(jwt,process.env.SECRET,(err,jwt)=>{
+      
       if(err){
         return send401(response);
       }else{
@@ -251,6 +251,22 @@ const send401 = (response) => {
   );
   return response.end(message);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   handelHomePage,

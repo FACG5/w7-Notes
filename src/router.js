@@ -12,43 +12,58 @@ const {
   displayPosts
 } = require("./handler/functions.js");
 const path = require("path");
-
+const { parse } = require("cookie");
+const { verify } = require("jsonwebtoken");
 
 const router = (req, res) => {
   const endponit = req.url;
   if (endponit === "/") {
     if (req.headers.cookie) {
-      res.writeHead(302, { location: '/home' });
-      res.end()
+      const { jwt } = parse(req.headers.cookie);
+      if (jwt) {
+        verify(jwt, process.env.SECRET, (err, jwt) => {
+          res.writeHead(302, { location: "/home" });
+          res.end();
+        });
+      } else {
+        handelHomePage(req, res);
+      }
     } else {
       handelHomePage(req, res);
     }
   } else if (endponit.includes("public")) {
     serverStaticFile(req, res);
-  } else if (endponit === "/signup" && req.method === 'POST') {
+  } else if (endponit === "/signup" && req.method === "POST") {
     insetUser(req, res);
-  } else if (endponit === "/signup" && req.method === 'GET') {
+  } else if (endponit === "/signup" && req.method === "GET") {
     handleSignUp(req, res);
-  }
-  else if (endponit === "/login") {
+  } else if (endponit === "/login") {
     login(req, res);
   } else if (endponit === "/logout") {
     logout(req, res);
   } else if (endponit === "/home") {
     if (req.headers.cookie) {
-      handelWebPage(req, res)
+      const { jwt } = parse(req.headers.cookie);
+      console.log(jwt);
+
+      if (jwt) {
+        verify(jwt, process.env.SECRET, (err, jwt) => {
+          handelWebPage(req, res);
+        });
+      } else {
+        handelHomePage(req, res);
+      }
     } else {
-      res.writeHead(302, { location: '/' });
+      res.writeHead(302, { location: "/" });
       res.end();
     }
-  } else if (endponit === "/addpost" && req.method === 'POST') {
+  } else if (endponit === "/addpost" && req.method === "POST") {
     addpost(req, res);
   } else if (endponit === "/getname") {
     getName(req, res);
   } else if (endponit === "/post") {
     displayPosts(req, res);
-  }
-  else {
+  } else {
     handelError(res);
   }
 };
